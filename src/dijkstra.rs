@@ -1,7 +1,7 @@
 use crate::graph::Graph;
 use crate::NodeId;
 
-use std::collections::HashSet;
+use std::collections::BinaryHeap;
 
 pub struct Dijkstra<'a> {
     g: &'a Graph,
@@ -15,41 +15,64 @@ impl<'a> Dijkstra<'a> {
     pub fn dist(&mut self, from: NodeId, to: NodeId) -> u32 {
         let mut dist = vec![u32::MAX; self.g.node_count()];
         let mut prev: Vec<Option<NodeId>> = vec![None; self.g.node_count()];
-        let mut q = HashSet::new();
+        let mut heap = BinaryHeap::new();
 
-        q.insert(from);
-        dist[from.0] = 0;
+        heap.push(HeapElement {
+            dist: 0,
+            node: from,
+            prev_node: from,
+        });
 
-        while let Some(u) = Self::minimum_vertex(&q, &dist) {
-            q.remove(&u);
+        while let Some(HeapElement {
+            dist: u_dist,
+            node: u,
+            prev_node,
+        }) = heap.pop()
+        {
+            // If your heap does not support a decrease key operation, you can
+            // include nodes multiple times and with the following condition
+            // ensure, that each is only processed once. (This is also said to
+            // perform better than decrease key, but I never benchmarked it)
+            if u_dist >= dist[u.0] {
+                continue;
+            }
+
+            dist[u.0] = u_dist;
+            prev[u.0] = Some(prev_node);
 
             for edge in self.g.outgoing_edges_of(u) {
-                let alt = dist[u.0] + edge.dist;
+                let alt = u_dist + edge.dist;
                 if alt < dist[edge.to.0] {
-                    dist[edge.to.0] = alt;
-                    prev[edge.to.0] = Some(u);
-                    q.insert(edge.to);
+                    heap.push(HeapElement {
+                        dist: alt,
+                        node: edge.to,
+                        prev_node: u,
+                    });
                 }
             }
         }
 
         dist[*to]
     }
+}
 
-    fn minimum_vertex(q: &HashSet<NodeId>, dist: &Vec<u32>) -> Option<NodeId> {
-        let mut min_node = (NodeId(usize::MAX), u32::MAX);
+#[derive(Debug, PartialEq, Eq)]
+pub struct HeapElement {
+    dist: u32,
+    node: NodeId,
+    prev_node: NodeId,
+}
 
-        for v in q {
-            let v_dist = dist[v.0];
-            if v_dist < min_node.1 {
-                min_node = (*v, v_dist);
-            }
-        }
+// The binary heap we are using is a max-heap. Therefore, we need to define a
+// custom ordering which reverses the sorting.
+impl Ord for HeapElement {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        other.dist.cmp(&self.dist)
+    }
+}
 
-        if min_node.1 < u32::MAX {
-            Some(min_node.0)
-        } else {
-            None
-        }
+impl PartialOrd for HeapElement {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }
