@@ -19,8 +19,7 @@ impl<'a> Dijkstra<'a> {
 
         dist[from.0] = 0;
 
-        while !q.is_empty() {
-            let u = Self::minimum_vertex(&q, &dist);
+        while let Some(u) = Self::minimum_vertex(&q, &dist) {
             q.remove(&u);
 
             for edge in self.g.outgoing_edges_of(u) {
@@ -35,15 +34,20 @@ impl<'a> Dijkstra<'a> {
         dist[*to]
     }
 
-    fn minimum_vertex(q: &BTreeSet<NodeId>, dist: &Vec<u32>) -> NodeId {
+    fn minimum_vertex(q: &BTreeSet<NodeId>, dist: &Vec<u32>) -> Option<NodeId> {
         let mut min_node = (NodeId(usize::MAX), u32::MAX);
 
         for v in q {
-            if dist[v.0] < min_node.1 {
-                min_node = (*v, dist[v.0]);
+            let v_dist = dist[v.0];
+            if v_dist < min_node.1 {
+                min_node = (*v, v_dist);
             }
         }
 
-        min_node.0
+        if min_node.1 < u32::MAX {
+            Some(min_node.0)
+        } else {
+            None
+        }
     }
 }
