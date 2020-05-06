@@ -7,7 +7,7 @@ use std::ops::Deref;
 
 pub const BENCH_FILE: &'static str = "resources/bench.data";
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Clone, Copy)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Clone, Copy, Hash)]
 pub struct NodeId(usize);
 
 #[derive(Debug, Serialize, Deserialize)]

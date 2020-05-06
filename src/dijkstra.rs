@@ -1,7 +1,7 @@
 use crate::graph::Graph;
 use crate::NodeId;
 
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 
 pub struct Dijkstra<'a> {
     g: &'a Graph,
@@ -15,7 +15,7 @@ impl<'a> Dijkstra<'a> {
     pub fn dist(&mut self, from: NodeId, to: NodeId) -> u32 {
         let mut dist = vec![u32::MAX; self.g.node_count()];
         let mut prev: Vec<Option<NodeId>> = vec![None; self.g.node_count()];
-        let mut q: BTreeSet<_> = (0..self.g.node_count()).map(NodeId).collect();
+        let mut q: HashSet<_> = (0..self.g.node_count()).map(NodeId).collect();
 
         dist[from.0] = 0;
 
@@ -34,7 +34,7 @@ impl<'a> Dijkstra<'a> {
         dist[*to]
     }
 
-    fn minimum_vertex(q: &BTreeSet<NodeId>, dist: &Vec<u32>) -> Option<NodeId> {
+    fn minimum_vertex(q: &HashSet<NodeId>, dist: &Vec<u32>) -> Option<NodeId> {
         let mut min_node = (NodeId(usize::MAX), u32::MAX);
 
         for v in q {
