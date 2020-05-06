@@ -15,8 +15,9 @@ impl<'a> Dijkstra<'a> {
     pub fn dist(&mut self, from: NodeId, to: NodeId) -> u32 {
         let mut dist = vec![u32::MAX; self.g.node_count()];
         let mut prev: Vec<Option<NodeId>> = vec![None; self.g.node_count()];
-        let mut q: HashSet<_> = (0..self.g.node_count()).map(NodeId).collect();
+        let mut q = HashSet::new();
 
+        q.insert(from);
         dist[from.0] = 0;
 
         while let Some(u) = Self::minimum_vertex(&q, &dist) {
@@ -27,6 +28,7 @@ impl<'a> Dijkstra<'a> {
                 if alt < dist[edge.to.0] {
                     dist[edge.to.0] = alt;
                     prev[edge.to.0] = Some(u);
+                    q.insert(edge.to);
                 }
             }
         }
