@@ -28,11 +28,17 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let graph = Graph::new(nodes, edges);
 
-    let node_dist = Uniform::new(0, graph.node_count() as i64);
+    let node_dist = Uniform::new(0, graph.node_count());
     let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
 
-    let sources = (0..10).map(|_| node_dist.sample(&mut rng)).collect();
-    let targets = (0..10).map(|_| node_dist.sample(&mut rng)).collect();
+    let sources = (0..10)
+        .map(|_| node_dist.sample(&mut rng))
+        .map(Into::into)
+        .collect();
+    let targets = (0..10)
+        .map(|_| node_dist.sample(&mut rng))
+        .map(Into::into)
+        .collect();
 
     println!("generated sources: {:?}", sources);
     println!("generated targets: {:?}", targets);

@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{Edge, Node};
-use std::convert::TryInto;
+use crate::{Edge, Node, NodeId};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Graph {
@@ -26,7 +25,7 @@ impl Graph {
             })
             .collect();
 
-        edges.iter().for_each(|e| offset[e.from as usize + 1] += 1);
+        edges.iter().for_each(|e| offset[*e.from + 1] += 1);
         for i in 1..offset.len() {
             offset[i] += offset[i - 1]
         }
@@ -42,17 +41,20 @@ impl Graph {
         use std::collections::HashMap;
         nodes.sort_by_key(|n| n.id);
 
-        let old_id_to_new_id: HashMap<_, _> =
-            nodes.iter().enumerate().map(|(i, n)| (n.id, i)).collect();
+        let old_id_to_new_id: HashMap<_, _> = nodes
+            .iter()
+            .enumerate()
+            .map(|(i, n)| (n.id as usize, i))
+            .collect();
 
         edges.iter_mut().for_each(|e| {
-            e.from = old_id_to_new_id[&e.from].try_into().unwrap();
-            e.to = old_id_to_new_id[&e.to].try_into().unwrap();
+            e.from = old_id_to_new_id[&e.from].into();
+            e.to = old_id_to_new_id[&e.to].into();
         })
     }
 
-    pub fn outgoing_edges_of(&self, node_id: i64) -> &[HalfEdge] {
-        let node_id = node_id as usize;
+    pub fn outgoing_edges_of(&self, node_id: NodeId) -> &[HalfEdge] {
+        let node_id = node_id.0;
         &self.half_edges[self.offset[node_id]..self.offset[node_id + 1]]
     }
 
@@ -70,6 +72,6 @@ impl Graph {
 
 #[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 pub struct HalfEdge {
-    pub to: i64,
+    pub to: NodeId,
     pub dist: u32,
 }

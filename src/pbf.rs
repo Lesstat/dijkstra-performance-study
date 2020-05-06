@@ -99,15 +99,15 @@ pub fn load_from_pbf(pbf: impl Read + Seek) -> Result<(Vec<Node>, Vec<Edge>), Bo
             let dist = haversine_distance(&nodes[id_to_idx[&from]], &nodes[id_to_idx[&to]]);
             edges.push(Edge {
                 id: 0,
-                from,
-                to,
+                from: from.into(),
+                to: to.into(),
                 dist,
             });
             if !w.oneway {
                 edges.push(Edge {
                     id: 0,
-                    from: to,
-                    to: from,
+                    from: to.into(),
+                    to: from.into(),
                     dist,
                 });
             }

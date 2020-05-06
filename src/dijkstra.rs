@@ -1,4 +1,5 @@
 use crate::graph::Graph;
+use crate::NodeId;
 
 pub struct Dijkstra<'a> {
     g: &'a Graph,
@@ -9,7 +10,7 @@ impl<'a> Dijkstra<'a> {
         Dijkstra { g }
     }
 
-    pub fn dist(&mut self, from: i64, to: i64) -> u32 {
+    pub fn dist(&mut self, from: NodeId, to: NodeId) -> u32 {
         0
     }
 }
