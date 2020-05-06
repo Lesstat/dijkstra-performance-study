@@ -5,6 +5,8 @@ pub mod pbf;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
+pub const BENCH_FILE: &'static str = "resources/bench.data";
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Clone, Copy)]
 pub struct NodeId(usize);
 
