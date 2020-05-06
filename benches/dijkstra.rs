@@ -1,7 +1,7 @@
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 use std::{fs::File, io::BufReader};
 
-use dijkstra_performance_study::{dijkstra::Dijkstra, BenchData, NodeId, BENCH_FILE};
+use dijkstra_performance_study::{dijkstra::Dijkstra, BenchData, BENCH_FILE};
 
 fn dijkstra_benchmark(c: &mut Criterion) {
     let resource_file = BufReader::new(File::open(BENCH_FILE).unwrap());
