@@ -9,6 +9,7 @@ pub struct Dijkstra<'a> {
     prev: Vec<Option<NodeId>>,
     heap: BinaryHeap<HeapElement>,
     touched: Vec<NodeId>,
+    last_from: NodeId,
 }
 
 impl<'a> Dijkstra<'a> {
@@ -23,6 +24,7 @@ impl<'a> Dijkstra<'a> {
             prev,
             heap,
             touched,
+            last_from: NodeId(usize::MAX),
         }
     }
 
@@ -36,13 +38,22 @@ impl<'a> Dijkstra<'a> {
     }
 
     pub fn dist(&mut self, from: NodeId, to: NodeId) -> u32 {
-        self.reset_state();
+        // If the query starts from the same node as before we can reuse it
+        if self.last_from == from {
+            if self.dist[to.0] < u32::MAX {
+                return self.dist[to.0];
+            }
+        } else {
+            // If not we initialize it normally
+            self.last_from = from;
+            self.reset_state();
 
-        self.heap.push(HeapElement {
-            dist: 0,
-            node: from,
-            prev_node: from,
-        });
+            self.heap.push(HeapElement {
+                dist: 0,
+                node: from,
+                prev_node: from,
+            });
+        }
 
         while let Some(HeapElement {
             dist: u_dist,
@@ -62,10 +73,6 @@ impl<'a> Dijkstra<'a> {
             self.prev[u.0] = Some(prev_node);
             self.touched.push(u);
 
-            if u == to {
-                return u_dist;
-            }
-
             for edge in self.g.outgoing_edges_of(u) {
                 let alt = u_dist + edge.dist;
                 if alt < self.dist[edge.to.0] {
@@ -75,6 +82,11 @@ impl<'a> Dijkstra<'a> {
                         prev_node: u,
                     });
                 }
+            }
+            // We moved this down here to have the heap in a consistent state
+            // (all outgoing neighbors of `to` are in the heap)
+            if u == to {
+                return u_dist;
             }
         }
 
