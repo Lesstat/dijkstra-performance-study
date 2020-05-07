@@ -5,19 +5,40 @@ use std::collections::BinaryHeap;
 
 pub struct Dijkstra<'a> {
     g: &'a Graph,
+    dist: Vec<u32>,
+    prev: Vec<Option<NodeId>>,
+    heap: BinaryHeap<HeapElement>,
+    touched: Vec<NodeId>,
 }
 
 impl<'a> Dijkstra<'a> {
     pub fn new(g: &'a Graph) -> Self {
-        Dijkstra { g }
+        let dist = vec![u32::MAX; g.node_count()];
+        let prev = vec![None; g.node_count()];
+        let heap = BinaryHeap::new();
+        let touched = Vec::new();
+        Dijkstra {
+            g,
+            dist,
+            prev,
+            heap,
+            touched,
+        }
+    }
+
+    pub fn reset_state(&mut self) {
+        for t in &self.touched {
+            self.dist[t.0] = u32::MAX;
+            self.prev[t.0] = None;
+        }
+        self.heap.clear();
+        self.touched.clear();
     }
 
     pub fn dist(&mut self, from: NodeId, to: NodeId) -> u32 {
-        let mut dist = vec![u32::MAX; self.g.node_count()];
-        let mut prev: Vec<Option<NodeId>> = vec![None; self.g.node_count()];
-        let mut heap = BinaryHeap::new();
+        self.reset_state();
 
-        heap.push(HeapElement {
+        self.heap.push(HeapElement {
             dist: 0,
             node: from,
             prev_node: from,
@@ -27,18 +48,19 @@ impl<'a> Dijkstra<'a> {
             dist: u_dist,
             node: u,
             prev_node,
-        }) = heap.pop()
+        }) = self.heap.pop()
         {
             // If your heap does not support a decrease key operation, you can
             // include nodes multiple times and with the following condition
             // ensure, that each is only processed once. (This is also said to
             // perform better than decrease key, but I never benchmarked it)
-            if u_dist >= dist[u.0] {
+            if u_dist >= self.dist[u.0] {
                 continue;
             }
 
-            dist[u.0] = u_dist;
-            prev[u.0] = Some(prev_node);
+            self.dist[u.0] = u_dist;
+            self.prev[u.0] = Some(prev_node);
+            self.touched.push(u);
 
             if u == to {
                 return u_dist;
@@ -46,8 +68,8 @@ impl<'a> Dijkstra<'a> {
 
             for edge in self.g.outgoing_edges_of(u) {
                 let alt = u_dist + edge.dist;
-                if alt < dist[edge.to.0] {
-                    heap.push(HeapElement {
+                if alt < self.dist[edge.to.0] {
+                    self.heap.push(HeapElement {
                         dist: alt,
                         node: edge.to,
                         prev_node: u,
@@ -56,7 +78,7 @@ impl<'a> Dijkstra<'a> {
             }
         }
 
-        dist[*to]
+        self.dist[*to]
     }
 }
 
