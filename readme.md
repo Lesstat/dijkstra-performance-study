@@ -54,17 +54,18 @@ If there is no output then everything is correct.
 
 # Implementations
 
-All implementations that are suitable for benchmarking are tagged. Please note
-that the benchmarks only compare Dijkstra's algorithm implementation but the
-underlying graph data structure is not considered, which plays an important part
-in the overall performance. This benchmark uses an Adjacency Array Graph as
-described in Algorithms and data structures: The basic toolbox by Kurt Mehlhorn
-and Peter Sanders. This data structure is memory and cache efficient and can
-only be used for static graphs. The performance improvements I state below are
-of course specific to my hardware as well as the graph and source and target
-nodes I generated. They always compare to subsequent iterations of the
-implementation and are only stated for a rough overview. Feel free to
-open an issue/pull-request if you encounter strong deviation.
+All implementations that are suitable for benchmarking are tagged and contained
+in [dijkstra.rs](src/dijkstra.rs). Please note that the benchmarks
+only compare Dijkstra's algorithm implementation but the underlying graph data
+structure is not considered, which plays an important part in the overall
+performance. This benchmark uses an Adjacency Array Graph as described in
+Algorithms and data structures: The basic toolbox by Kurt Mehlhorn and Peter
+Sanders. This data structure is memory and cache efficient and can only be used
+for static graphs. The performance improvements I state below are of course
+specific to my hardware as well as the graph and source and target nodes I
+generated. They always compare to subsequent iterations of the implementation
+and are only stated for a rough overview. Feel free to open an
+issue/pull-request if you encounter strong deviation.
 
 ## Wikipedia's Implementation
 
