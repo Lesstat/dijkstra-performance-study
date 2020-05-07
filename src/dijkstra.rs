@@ -40,6 +40,10 @@ impl<'a> Dijkstra<'a> {
             dist[u.0] = u_dist;
             prev[u.0] = Some(prev_node);
 
+            if u == to {
+                return u_dist;
+            }
+
             for edge in self.g.outgoing_edges_of(u) {
                 let alt = u_dist + edge.dist;
                 if alt < dist[edge.to.0] {
