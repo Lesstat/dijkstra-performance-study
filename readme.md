@@ -95,7 +95,8 @@ If you replace the frontier set with a frontier binary heap, you get an
 implementation with an O(n log n) runtime complexity. That again improved
 runtime by about 70%. The implementation does not use the decrease key operation
 of a heap, because it is not present in the heap implementation of the standard
-library. The tag is _heap_.
+library. This is anecdotally faster than using the decrease key operation, but I
+have not yet benchmarked this. The corresponding tag is _heap_.
 
 ## Stopping when the target node is reached
 
