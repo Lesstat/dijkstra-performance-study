@@ -101,7 +101,7 @@ have not yet benchmarked this. The corresponding tag is _heap_.
 ## Stopping when the target node is reached
 
 All the previous implementations had been one to all queries. If we stop after
-the destination node is pulled out of the heap, we do improve the algorithm
+the destination node is pulled out of the heap, we do not improve the algorithm
 asymptotically but have large improvements on "short" queries (as in the
 distance is smalled compared to the graph diameter). The runtime was reduced
 between 5% and 90% in my benchmarks for the implementation under tag
